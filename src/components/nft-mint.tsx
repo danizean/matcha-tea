@@ -13,10 +13,21 @@ import {
   NFT,
   useActiveAccount,
 } from "thirdweb/react";
+
 import { client } from "@/lib/thirdwebClient";
 import React from "react";
 import { toast } from "sonner";
 import { Skeleton } from "./ui/skeleton";
+import { lightTheme } from "thirdweb/react";
+import { createWallet } from "thirdweb/wallets";
+const wallets = [
+  createWallet("io.metamask"),
+  createWallet("io.rabby"),
+  createWallet("com.okex.wallet"),
+  createWallet("com.bitget.web3"),
+  createWallet("com.trustwallet.app"),
+];
+
 
 type Props = {
   contract: ThirdwebContract;
@@ -51,7 +62,20 @@ export function NftMint(props: Props) {
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#F4F1EA] dark:bg-[#1A1A1A] transition-colors duration-200 px-4">
       {/* Connect Wallet */}
       <div className="absolute top-4 right-4">
-        <ConnectButton client={client} />
+      <ConnectButton
+      client={client}
+      wallets={wallets}
+      theme={lightTheme({
+        colors: {
+          primaryButtonBg: "hsl(161, 69%, 28%)",
+          modalBg: "hsl(300, 20%, 99%)",
+        },
+      })}
+      connectModal={{
+        size: "compact",
+        showThirdwebBranding: false,
+      }}
+    />
       </div>
 
       {/* NFT Card */}
@@ -124,7 +148,7 @@ export function NftMint(props: Props) {
         <CardFooter>
           {account ? (
             <ClaimButton
-              theme={"light"}
+              theme={"dark"}
               contractAddress={props.contract.address}
               chain={props.contract.chain}
               client={props.contract.client}
@@ -153,7 +177,21 @@ export function NftMint(props: Props) {
               Mint {quantity} NFT{quantity > 1 ? "s" : ""}
             </ClaimButton>
           ) : (
-            <ConnectButton client={client} connectButton={{ style: { width: "100%" } }} />
+            <ConnectButton
+      client={client}
+	connectButton={{ style: { width: "100%" } }}
+      wallets={wallets}
+      theme={lightTheme({
+        colors: {
+          primaryButtonBg: "hsl(161, 69%, 28%)",
+          modalBg: "hsl(300, 20%, 99%)",
+        },
+      })}
+      connectModal={{
+        size: "compact",
+        showThirdwebBranding: false,
+      }}
+    />
           )}
         </CardFooter>
       </Card>
@@ -165,14 +203,14 @@ export function NftMint(props: Props) {
           onClick={() => window.open("https://assam.tea.xyz/", "_blank")}
           className="w-32 border-gray-400 text-gray-700 dark:text-white"
         >
-          Explorer
+          Explorer TEA
         </Button>
         <Button
           variant="outline"
           onClick={() => window.open("https://faucet-assam.tea.xyz/", "_blank")}
           className="w-32 border-gray-400 text-gray-700 dark:text-white"
         >
-          Faucet
+          Faucet TEA
         </Button>
       </div>
     </div>
