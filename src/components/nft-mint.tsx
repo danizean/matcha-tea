@@ -197,22 +197,22 @@ export function NftMint(props: Props) {
       </Card>
 
       {/* Explorer & Faucet Buttons */}
-      <div className="absolute bottom-4 left-4 flex flex-col space-y-2">
-        <Button
-          variant="outline"
-          onClick={() => window.open("https://assam.tea.xyz/", "_blank")}
-          className="w-32 border-gray-400 text-gray-700 dark:text-white"
-        >
-          Explorer TEA
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => window.open("https://faucet-assam.tea.xyz/", "_blank")}
-          className="w-32 border-gray-400 text-gray-700 dark:text-white"
-        >
-          Faucet TEA
-        </Button>
-      </div>
+      <div className="flex justify-center sm:justify-start sm:flex-row flex-col space-y-2 sm:space-x-4 sm:space-y-0 pb-4 sm:pb-0">
+    <Button
+      variant="outline"
+      onClick={() => window.open("https://assam.tea.xyz/", "_blank")}
+      className="w-32 border-gray-400 text-gray-700 dark:text-white"
+    >
+      Explorer TEA
+    </Button>
+    <Button
+      variant="outline"
+      onClick={() => window.open("https://faucet-assam.tea.xyz/", "_blank")}
+      className="w-32 border-gray-400 text-gray-700 dark:text-white"
+    >
+      Faucet TEA
+    </Button>
+    </div>
     </div>
   );
 }
