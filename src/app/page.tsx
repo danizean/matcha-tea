@@ -14,7 +14,6 @@ import {
   getNFT,
   isERC1155,
 } from "thirdweb/extensions/erc1155";
-import { getCurrencyMetadata } from "thirdweb/extensions/erc20";
 import {
   getActiveClaimCondition as getActiveClaimCondition721,
   isERC721,
@@ -22,8 +21,8 @@ import {
 import { useReadContract } from "thirdweb/react";
 
 export default function Home() {
-  const tokenId = defaultTokenId;
   const chain = defineChain(defaultChainId);
+  const tokenId = defaultTokenId;
 
   const contract = getContract({
     address: defaultNftContractAddress,
@@ -31,55 +30,54 @@ export default function Home() {
     client,
   });
 
-  const isERC721Query = useReadContract(isERC721, { contract });
-  const isERC1155Query = useReadContract(isERC1155, { contract });
+  const is721 = useReadContract(isERC721, { contract });
+  const is1155 = useReadContract(isERC1155, { contract });
+  const metadata = useReadContract(getContractMetadata, { contract });
 
-  const contractMetadataQuery = useReadContract(getContractMetadata, {
-    contract,
-  });
-
-  const nftQuery = useReadContract(getNFT, {
+  const nft = useReadContract(getNFT, {
     contract,
     tokenId,
-    queryOptions: { enabled: isERC1155Query.data },
+    queryOptions: { enabled: is1155.data },
   });
 
-  const claimCondition1155 = useReadContract(getActiveClaimCondition1155, {
+  const claim721 = useReadContract(getActiveClaimCondition721, {
+    contract,
+    queryOptions: { enabled: is721.data },
+  });
+
+  const claim1155 = useReadContract(getActiveClaimCondition1155, {
     contract,
     tokenId,
-    queryOptions: { enabled: isERC1155Query.data },
+    queryOptions: { enabled: is1155.data },
   });
 
-  const claimCondition721 = useReadContract(getActiveClaimCondition721, {
-    contract,
-    queryOptions: { enabled: isERC721Query.data },
-  });
-
-  const priceInWei = isERC1155Query.data
-    ? claimCondition1155.data?.pricePerToken
-    : claimCondition721.data?.pricePerToken;
-
-  const currency = isERC1155Query.data
-    ? claimCondition1155.data?.currency
-    : claimCondition721.data?.currency;
-
-  const currencySymbol = "TEA"; // Patenkan menjadi TEA
-
+  const priceInWei = claim1155.data?.pricePerToken || claim721.data?.pricePerToken;
   const pricePerToken =
-    priceInWei !== null && priceInWei !== undefined
-      ? Number(toTokens(priceInWei, 18))
-      : null;
+    priceInWei !== undefined ? Number(toTokens(priceInWei, 18)) : null;
+
+  if (is721.isLoading || is1155.isLoading || metadata.isLoading)
+    return (
+      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-[#fdeff9] via-[#ecf2ff] to-[#e0c3fc] text-xl text-ghibli-dark font-semibold tracking-wide overflow-hidden relative">
+        <div className="absolute inset-0 bg-[url('/ghibli-forest.svg')] bg-cover bg-center opacity-10 animate-float z-0" />
+        <div className="absolute left-[10%] top-[20%] w-12 h-12 bg-[url('/leaf.svg')] bg-contain bg-no-repeat animate-float animate-[float_6s_ease-in-out_infinite] delay-[200ms]" />
+        <div className="absolute right-[15%] bottom-[25%] w-10 h-10 bg-[url('/leaf.svg')] bg-contain bg-no-repeat animate-float animate-[float_6s_ease-in-out_infinite] delay-[500ms]" />
+        <div className="absolute left-[40%] bottom-[10%] w-14 h-14 bg-[url('/leaf.svg')] bg-contain bg-no-repeat animate-float animate-[float_6s_ease-in-out_infinite] delay-[700ms]" />
+        <div className="absolute top-[10%] left-[45%] w-16 h-16 bg-[url('/totoro-silhouette.svg')] bg-contain bg-no-repeat opacity-20 animate-float animate-[float_6s_ease-in-out_infinite] delay-[1000ms]" />
+        <div className="absolute bottom-[5%] right-[5%] w-20 h-20 bg-[url('/lantern.svg')] bg-contain bg-no-repeat animate-float animate-[float_6s_ease-in-out_infinite] delay-[1500ms]" />
+        <div className="relative z-10 text-center animate-pulse">🍵 Brewing your Matcha Tea...</div>
+      </div>
+    );
 
   return (
     <NftMint
       contract={contract}
-      displayName={contractMetadataQuery.data?.name || ""}
-      contractImage={contractMetadataQuery.data?.image || ""}
-      description={contractMetadataQuery.data?.description || ""}
-      currencySymbol={currencySymbol}
+      displayName={nft.data?.metadata.name || metadata.data?.name || ""}
+      contractImage={metadata.data?.image || ""}
+      description={nft.data?.metadata.description || metadata.data?.description || ""}
+      currencySymbol="TEA"
       pricePerToken={pricePerToken}
-      isERC1155={!!isERC1155Query.data}
-      isERC721={!!isERC721Query.data}
+      isERC1155={!!is1155.data}
+      isERC721={!!is721.data}
       tokenId={tokenId}
     />
   );

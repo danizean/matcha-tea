@@ -1,38 +1,20 @@
+// app/components/NftMint.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  CardDescription,
+  Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-  Minus,
-  Plus,
-  Leaf,
-  Loader2,
-  Share2,
-  ArrowLeftCircle,
-  Sparkles,
-  ImageIcon,
-  Mail,
-  Users,
-  FileText,
-  HelpCircle,
+  Minus, Plus, Leaf, Loader2, Share2, ArrowLeftCircle, Sparkles, ImageIcon,
+  Mail, Users, FileText, HelpCircle,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import type { ThirdwebContract } from "thirdweb";
 import {
-  ClaimButton,
-  ConnectButton,
-  MediaRenderer,
-  NFT,
-  useActiveAccount,
+  ClaimButton, ConnectButton, MediaRenderer, NFT, useActiveAccount,
 } from "thirdweb/react";
 import { client } from "@/lib/thirdwebClient";
 import { toast } from "sonner";
@@ -59,8 +41,6 @@ export function NftMint(props: Props) {
   const [totalSupply, setTotalSupply] = useState(1);
   const [totalMinted, setTotalMinted] = useState(0);
   const [email, setEmail] = useState("");
-  const [parallaxOffset, setParallaxOffset] = useState({ x: 0, y: 0 });
-
   const account = useActiveAccount();
   const MAX_MINT_PER_ADDRESS = 3;
 
@@ -81,23 +61,26 @@ export function NftMint(props: Props) {
       }
     };
     fetchSupply();
-  }, [props.contract, props.tokenId, props.isERC1155, props.isERC721]);
+  }, [props]);
 
+  // Parallax effect
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 30;
-      const y = (e.clientY / window.innerHeight - 0.5) * 30;
-      setParallaxOffset({ x, y });
+    const handleScroll = () => {
+      const bg = document.getElementById("parallax-bg");
+      if (bg) {
+        const offset = window.scrollY * 0.2;
+        bg.style.transform = `translateY(${offset}px)`;
+      }
     };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const decreaseQuantity = () => setQuantity((prev) => Math.max(1, prev - 1));
   const increaseQuantity = () => setQuantity((prev) => Math.min(MAX_MINT_PER_ADDRESS, prev + 1));
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number.parseInt(e.target.value);
-    if (!Number.isNaN(value)) {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value)) {
       setQuantity(Math.min(MAX_MINT_PER_ADDRESS, Math.max(1, value)));
     }
   };
@@ -107,7 +90,7 @@ export function NftMint(props: Props) {
       toast.error("Masukkan email yang valid.");
       return;
     }
-    toast.success("Berhasil berlangganan! 🎉");
+    toast.success("Berhasil berlangganan!");
     setEmail("");
   };
 
@@ -119,16 +102,12 @@ export function NftMint(props: Props) {
   const isSoldOut = totalMinted >= totalSupply;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fdeff9] via-[#ecf2ff] to-[#e0c3fc] text-gray-800 font-sans flex flex-col relative overflow-hidden">
-      {/* 🌿 PARALLAX BACKGROUND */}
+    <div className="min-h-screen bg-gradient-to-br from-[#fdeff9] via-[#ecf2ff] to-[#e0c3fc] text-gray-800 font-sans flex flex-col relative overflow-x-hidden">
       <div
-        className="absolute inset-0 bg-[url('/ghibli-forest.svg')] bg-cover bg-center opacity-10 pointer-events-none z-0 transition-transform duration-300 ease-out blur-sm"
-        style={{
-          transform: `translate(${parallaxOffset.x}px, ${parallaxOffset.y}px) scale(1.05)`,
-        }}
+        id="parallax-bg"
+        className="absolute inset-0 bg-[url('/ghibli-forest.svg')] bg-cover bg-center opacity-10 pointer-events-none z-0 transition-transform duration-500"
       />
 
-      {/* 🔗 Header */}
       <header className="w-full py-6 px-6 flex justify-between items-center bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm z-20 fixed top-0">
         <div className="flex items-center gap-2 text-xl font-bold text-green-700">
           <Leaf className="h-6 w-6" /> Ghibli Mint
@@ -136,7 +115,6 @@ export function NftMint(props: Props) {
         <ConnectButton client={client} />
       </header>
 
-      {/* 🪄 Hero */}
       <div className="pt-32 pb-6 px-6 text-center z-10">
         <h1 className="text-5xl font-extrabold mb-3 tracking-tight leading-tight bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-transparent bg-clip-text">
           Collect Your Piece of Magic ✨
@@ -146,14 +124,14 @@ export function NftMint(props: Props) {
         </p>
       </div>
 
-      {/* 🎴 Mint Card & Sidebar */}
       <main className="flex flex-col lg:flex-row justify-center items-start gap-6 px-4 z-10 max-w-6xl mx-auto">
-        {/* NFT CARD */}
+        {/* Mint Card */}
         <Card className="w-full max-w-xl rounded-3xl shadow-2xl border-0 bg-white/90 backdrop-blur-lg">
           <CardHeader className="text-center px-6 pt-6">
             <CardTitle className="text-3xl font-semibold mb-1 text-purple-700">{props.displayName}</CardTitle>
             <CardDescription className="text-gray-500 text-sm">{props.description}</CardDescription>
           </CardHeader>
+
           <CardContent className="px-6">
             <div className="aspect-square overflow-hidden rounded-xl mb-4 relative shadow-md bg-white">
               {isSoldOut && props.soldOutImage ? (
@@ -182,6 +160,13 @@ export function NftMint(props: Props) {
               )}
             </div>
 
+            <div className="mb-4">
+              <Progress value={(totalMinted / totalSupply) * 100} />
+              <p className="text-xs text-gray-500 mt-1 text-right">
+                {totalMinted}/{totalSupply} minted
+              </p>
+            </div>
+
             <div className="flex items-center justify-between gap-4 mb-6">
               <div className="flex items-center bg-gray-200 rounded-full px-3 py-1">
                 <Button variant="ghost" size="icon" onClick={decreaseQuantity} disabled={quantity <= 1}>
@@ -199,7 +184,9 @@ export function NftMint(props: Props) {
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <div className="text-sm font-medium">Total: {totalPrice} {props.currencySymbol}</div>
+              <div className="text-sm font-medium">
+                Total: {totalPrice} {props.currencySymbol}
+              </div>
             </div>
 
             {props.artist && <div className="text-xs text-gray-500 mb-1"><strong>Artist:</strong> {props.artist}</div>}
@@ -228,8 +215,6 @@ export function NftMint(props: Props) {
                   padding: "14px",
                   fontWeight: 600,
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#6c3483")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "#8e44ad")}
                 disabled={isMinting || isSoldOut}
                 onTransactionSent={() => {
                   setIsMinting(true);
@@ -269,50 +254,58 @@ export function NftMint(props: Props) {
           </CardFooter>
         </Card>
 
-        {/* SIDEBAR INFO */}
+        {/* Sidebar Info */}
         <div className="text-gray-600 text-sm max-w-md flex flex-col gap-4">
-          <div className="bg-white/70 p-4 rounded-2xl shadow-sm">
-            <h2 className="text-lg font-semibold text-purple-700 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-pink-500" /> Story Behind This Drop
-            </h2>
-            <p className="mt-1">
-              This NFT captures the serene spirit of forest creatures and magical moments hidden within lush greenery. Let it be your digital escape.
-            </p>
-          </div>
-          <div className="bg-white/70 p-4 rounded-2xl shadow-sm">
-            <h2 className="text-lg font-semibold text-blue-600 flex items-center gap-2">
-              <ImageIcon className="w-5 h-5 text-blue-400" /> Tips for a Better Experience
-            </h2>
-            <ul className="list-disc pl-5 mt-2 space-y-1">
-              <li>Use a desktop browser for smoother minting.</li>
-              <li>Ensure your wallet is connected to the correct network.</li>
-              <li>Refresh the page after a successful mint to update supply.</li>
-            </ul>
-          </div>
-          <div className="bg-white/70 p-4 rounded-2xl shadow-sm">
-            <h2 className="text-lg font-semibold text-green-700 flex items-center gap-2">
-              <Mail className="w-5 h-5 text-green-500" /> Subscribe for Updates
-            </h2>
-            <div className="flex mt-2 gap-2">
-              <Input
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Button onClick={handleSubscribe}>Subscribe</Button>
+          {[
+            {
+              icon: <Sparkles className="w-5 h-5 text-pink-500" />,
+              title: "Story Behind This Drop",
+              content: "This NFT captures the serene spirit of forest creatures and magical moments hidden within lush greenery. Let it be your digital escape.",
+            },
+            {
+              icon: <ImageIcon className="w-5 h-5 text-blue-400" />,
+              title: "Tips for a Better Experience",
+              content: (
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Use a desktop browser for smoother minting.</li>
+                  <li>Ensure your wallet is connected to the correct network.</li>
+                  <li>Refresh after mint to update total supply.</li>
+                </ul>
+              ),
+            },
+            {
+              icon: <Mail className="w-5 h-5 text-green-500" />,
+              title: "Subscribe for Updates",
+              content: (
+                <div className="flex mt-2 gap-2">
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <Button onClick={handleSubscribe}>Subscribe</Button>
+                </div>
+              ),
+            },
+            {
+              icon: <HelpCircle className="w-5 h-5 text-indigo-500" />,
+              title: "FAQ",
+              content: (
+                <ul className="space-y-2 mt-2">
+                  <li><strong>Q:</strong> How do I mint?<br /><strong>A:</strong> Connect wallet & click Mint.</li>
+                  <li><strong>Q:</strong> What network?<br /><strong>A:</strong> Use supported chain on wallet.</li>
+                  <li><strong>Q:</strong> Max mint?<br /><strong>A:</strong> 3 per address.</li>
+                </ul>
+              ),
+            },
+          ].map((section, i) => (
+            <div key={i} className="bg-white/70 p-4 rounded-2xl shadow-sm">
+              <h2 className="text-lg font-semibold flex items-center gap-2">{section.icon} {section.title}</h2>
+              <div className="mt-1">{section.content}</div>
             </div>
-          </div>
-          <div className="bg-white/70 p-4 rounded-2xl shadow-sm">
-            <h2 className="text-lg font-semibold text-indigo-700 flex items-center gap-2">
-              <HelpCircle className="w-5 h-5 text-indigo-500" /> FAQ
-            </h2>
-            <ul className="mt-2 space-y-2">
-              <li><strong>Q:</strong> How do I mint?<br /><strong>A:</strong> Connect wallet & click Mint.</li>
-              <li><strong>Q:</strong> What network is used?<br /><strong>A:</strong> Check your wallet’s chain match.</li>
-              <li><strong>Q:</strong> Can I mint more than 1?<br /><strong>A:</strong> Up to 3 per address.</li>
-            </ul>
-          </div>
+          ))}
+
           <div className="bg-white/70 p-4 rounded-2xl shadow-sm flex flex-col gap-2">
             <Button asChild variant="outline">
               <a href="https://t.me/yourcommunity" target="_blank" rel="noopener noreferrer">
@@ -328,7 +321,6 @@ export function NftMint(props: Props) {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="mt-auto py-8 px-4 text-center text-sm text-gray-500 bg-white/70 border-t border-gray-200 backdrop-blur z-10">
         Made with 🍵 by Assam & You — Explore the forest of pixels.
       </footer>

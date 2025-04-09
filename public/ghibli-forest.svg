@@ -1,0 +1,19 @@
+<svg width="100%" height="100%" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="ghibliFog" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0f4ec" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#f0f4ec" stop-opacity="0.9" />
+    </linearGradient>
+  </defs>
+  <rect width="1440" height="900" fill="url(#ghibliFog)" />
+  <g fill="#5E8A57" opacity="0.6">
+    <path d="M0 700 Q200 500 400 700 T800 700 T1200 700 T1440 700 V900 H0 Z" />
+    <path d="M0 750 Q250 600 500 750 T1000 750 T1440 750 V900 H0 Z" fill="#779966" opacity="0.5" />
+    <path d="M0 800 Q300 650 600 800 T1200 800 T1440 800 V900 H0 Z" fill="#9DBE8D" opacity="0.3" />
+  </g>
+  <g fill="#3D5A3C" opacity="0.4">
+    <circle cx="300" cy="650" r="80" />
+    <circle cx="1000" cy="680" r="100" />
+    <circle cx="700" cy="620" r="60" />
+  </g>
+</svg>
